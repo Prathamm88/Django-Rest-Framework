@@ -8,10 +8,10 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from employees.models import Employee
 from django.http import Http404
-from rest_framework import mixins,generics
+from rest_framework import mixins,generics,viewsets
 # Create your views here.
 
-@api_view(['GET'])
+# @api_view(['GET'])
 def studentsview(request):
     pass
     # if request.method == 'GET':  
@@ -29,7 +29,7 @@ def studentsview(request):
     #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+# @api_view(['GET'])
 def studentDetailView(request,pk):
     pass
     # try:
@@ -59,9 +59,9 @@ def studentDetailView(request,pk):
    
 
 
-class EmployeeDetail(APIView):
-    def get_object(self,pk):
-        pass
+# class EmployeeDetail(APIView):
+#     def get_object(self,pk):
+#         pass
     #     try:
     #         return Employee.objects.get(pk=pk)
     #     except Employee.DoesNotExist:
@@ -70,7 +70,7 @@ class EmployeeDetail(APIView):
     #     employee = self.get_object(pk)
     #     serializer = EmployeeSerializer(employee)       
     #     return Response (serializer.data, status=status.HTTP_200_OK)
-   
+'''
 class Employees(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
@@ -81,3 +81,25 @@ class Employees(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAP
     def post(self,request):
         return self.create(request)
 
+
+class EmployeeDetail(mixins.ListModelMixin,mixins.CreateModelMixin,mixins.DestroyModelMixin,mixins.RetrieveModelMixin,mixins.UpdateModelMixin,generics.GenericAPIView):
+
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+    def get(self,request,pk):
+        return self.retrieve(request,pk)
+    
+
+    def put(self,reuqest,pk):
+        return self.update(reuqest,pk) 
+    
+    def delete(self,request,pk):
+        return self.destroy(request,pk)
+'''
+
+class EmployeeViewset(viewsets.ViewSet):
+    def list(self,request):
+        queryset = Employee.objects.all()
+        serializer = EmployeeSerializer(queryset,many=True)
+        return Response(serializer.data)
