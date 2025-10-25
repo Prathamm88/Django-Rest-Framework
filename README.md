@@ -1,1 +1,1 @@
-# there are my rest framework learning files present in this repo, all concepts which i have learned are into this repo 
+This repository contains all my Django REST Framework learning files, including all the concepts I have studied.
