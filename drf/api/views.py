@@ -11,7 +11,8 @@ from django.http import Http404
 from rest_framework import mixins,generics,viewsets
 from blog.serilizers import BlogSerializer,commentSerializer
 from blog.models import Blog,comment
-
+from .pagination import CustomPagination
+from employees.filters import EmployeeFilter
 # Create your views here.
 
 @api_view(['GET'])
@@ -53,36 +54,36 @@ def studentDetailView(request,pk):
          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Employees(APIView):
-    def get(self,request):
-        empployees = Employee.objects.all()
-        serializer = EmployeeSerializer(empployees,many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+# class Employees(APIView):
+#     def get(self,request):
+#         empployees = Employee.objects.all()
+#         serializer = EmployeeSerializer(empployees,many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
         
    
 
 
-class EmployeeDetail(APIView):
-    def get_object(self,pk):
-        pass
-        try:
-            return Employee.objects.get(pk=pk)
-        except Employee.DoesNotExist:
-            raise Http404   
-    def get(self,request,pk) :
-        employee = self.get_object(pk)
-        serializer = EmployeeSerializer(employee)       
-        return Response (serializer.data, status=status.HTTP_200_OK)
+# class EmployeeDetail(APIView):
+#     def get_object(self,pk):
+#         pass
+#         try:
+#             return Employee.objects.get(pk=pk)
+#         except Employee.DoesNotExist:
+#             raise Http404   
+#     def get(self,request,pk) :
+#         employee = self.get_object(pk)
+#         serializer = EmployeeSerializer(employee)       
+#         return Response (serializer.data, status=status.HTTP_200_OK)
 
-class Employees(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
+# class Employees(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+#     queryset = Employee.objects.all()
+#     serializer_class = EmployeeSerializer
 
-    def get(self,request):
-        return self.list(request)
+#     def get(self,request):
+#         return self.list(request)
      
-    def post(self,request):
-        return self.create(request)
+#     def post(self,request):
+#         return self.create(request)
 
 
 class EmployeeDetail(mixins.ListModelMixin,
@@ -106,28 +107,35 @@ class EmployeeDetail(mixins.ListModelMixin,
         return self.destroy(request,pk)
 
 
-class EmployeeViewset(viewsets.ViewSet):
-    def list(self,request):
-        queryset = Employee.objects.all()
-        serializer = EmployeeSerializer(queryset,many=True)
-        return Response(serializer.data)
+# class EmployeeViewset(viewsets.ViewSet):
+#     def list(self,request):
+#         queryset = Employee.objects.all()
+#         serializer = EmployeeSerializer(queryset,many=True)
+#         return Response(serializer.data)
     
-    def create(self,request):
-        serializer = EmployeeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response (serializer.errors)
+#     def create(self,request):
+#         serializer = EmployeeSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response (serializer.errors)
     
 
+class EmployeeViewset(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    pagination_class = CustomPagination
+    filterset_fields = ['designation','emp_name']
 
 class EmployeeSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
+    
 
 class BlogView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
 
 class  commentsView(generics.ListCreateAPIView):
     queryset = comment.objects.all()
